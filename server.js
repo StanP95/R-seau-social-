@@ -1,41 +1,46 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-require('dotenv').config();
+const http = require('http');
+const app = require('./app');
 
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const postRoutes = require('./routes/postRoutes');
+// Normaliser le port
+const normalizePort = (val) => {
+  const port = parseInt(val, 10);
+  if (isNaN(port)) return val;
+  if (port >= 0) return port;
+  return false;
+};
 
-// Connexion à MongoDB
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
 
-async function connectDatabase() {
-    try {
-    await
-    mongoose.connect(process.env.MONGO_URL);    
-        console.log('Connexion à MongoDB réussie !');
-    } catch (error) {
-        console.error('Erreur de connexion à la base de données :', error);
-    }
+// Gestionnaire d'erreurs pour le serveur HTTP
+const errorHandler = (error) => {
+  if (error.syscall !== 'listen') throw error;
+  const bind = typeof server.address() === 'string' ? `pipe ${server.address()}` : `port ${port}`;
+  switch (error.code) {
+    case 'EACCES':
+      console.error(`${bind} requires elevated privileges.`);
+      process.exit(1);
+    case 'EADDRINUSE':
+      console.error(`${bind} is already in use.`);
+      process.exit(1);
+    default:
+      throw error;
   }
-  connectDatabase();
+};
 
 
-const app = express();
 
-// Middlewares
-app.use(cors());
-app.use(bodyParser.json());
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/post', postRoutes);
+const server = http.createServer(app);
 
-app.get('/api/user', (req, res) => {
-    res.send('bonjour');
-  });
+server.on('error', errorHandler);
+server.on('listening', () => {
+  const bind = typeof server.address() === 'string' ? `pipe ${server.address()}` : `port ${port}`;
+  console.log(`Listening on ${bind}`);
+});
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(port);
+
+
+
+
