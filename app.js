@@ -38,6 +38,10 @@ app.get('/api/user', (req, res) => {
     res.send('bonjour');
   });
 
+
+module.exports = app;
+
+
 // const PORT = process.env.PORT || 3000;
 // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
@@ -82,6 +86,6 @@ app.get('/api/user', (req, res) => {
 
 // // app.use("/api/posts", postRoute);
 
-module.exports = app;
+
 
 
