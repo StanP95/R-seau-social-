@@ -1,8 +1,17 @@
 const User = require('../models/user');
 
-exports.getUser = async (req, res) => {
+exports.getUserById = async (req, res) => {
     try {
         const user = await User.findById(req.params.id).populate('followers following');
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getUser = async (req, res) => {
+    try {
+        const user = await User.find().populate('followers following');
         res.json(user);
     } catch (error) {
         res.status(500).json({ error: error.message });
